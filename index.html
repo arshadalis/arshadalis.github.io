@@ -1,289 +1,130 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:color="http://www.w3.org/1999/xhtml">
-	<head>
-	<title>Home</title>
-	<meta charset="utf-8">
-	<meta name = "format-detection" content = "telephone=no" />
-	<link rel="icon" href="images/favicon.ico" type="image/x-icon">
-	<link rel="stylesheet" href="css/grid.css">
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="css/camera.css">
-	<link rel="stylesheet" href="css/owl.carousel.css">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkyOne Cricket — Stats Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#687386;--line:#e7ebf2;--accent:#2563eb;--green:#16a34a;--red:#dc2626;--gold:#d97706;--shadow:0 10px 30px rgba(31,41,55,.07)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#101828,#1d4ed8);color:#fff;padding:34px max(20px,calc((100% - 1200px)/2));position:relative;overflow:hidden}
+header:after{content:"";position:absolute;width:420px;height:420px;border:70px solid rgba(255,255,255,.06);border-radius:50%;right:-120px;top:-230px}
+.header-inner{position:relative;z-index:1}.eyebrow{font-size:12px;letter-spacing:.15em;text-transform:uppercase;opacity:.75}.title{font-size:34px;font-weight:800;margin:7px 0}.subtitle{opacity:.78}
+.container{max-width:1200px;margin:auto;padding:22px 20px 50px}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 22px}.search{flex:1;min-width:240px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:15px;outline:none}.search:focus{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}
+select,.btn{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font-weight:600;cursor:pointer}.btn.active{background:#111827;color:#fff}
+.section{margin-top:30px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:14px}.section h2{margin:0;font-size:22px}.section-note{color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}.value{font-size:30px;font-weight:800;margin-top:7px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);min-height:330px}.chart-title{font-weight:750;margin-bottom:10px}.chart-wrap{height:270px;position:relative}
+.table-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.table-scroll{overflow:auto;max-height:620px}table{border-collapse:collapse;width:100%;min-width:900px}th,td{padding:12px 13px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;font-size:13px}th{position:sticky;top:0;background:#f8fafc;color:#536174;font-size:11px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;z-index:1}tbody tr:hover{background:#f8fbff}.player{font-weight:750}.num{text-align:right;font-variant-numeric:tabular-nums}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700}.win{color:var(--green);font-weight:750}.loss{color:var(--red);font-weight:750}
+.match-list{display:grid;gap:10px}.match{display:grid;grid-template-columns:110px 1fr 150px;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}.date{font-size:12px;color:var(--muted)}.teams{font-weight:750}.result{font-size:13px;text-align:right}.score{font-weight:800}.empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.match{grid-template-columns:90px 1fr}.result{text-align:left;grid-column:2}}
+@media(max-width:520px){header{padding:25px 18px}.container{padding:18px 12px 40px}.cards{grid-template-columns:1fr 1fr}.value{font-size:24px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.search{grid-column:1/-1}.match{grid-template-columns:1fr}.result{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="eyebrow">Cricket analytics</div><div class="title" id="groupName">SkyOne</div><div class="subtitle">Performance dashboard · batting · bowling · fielding · matches</div></div></header>
+<main class="container">
+<div class="toolbar">
+<input id="search" class="search" placeholder="Search player or match...">
+<select id="teamFilter"><option value="all">All teams</option><option>Arshad 11</option><option>Quisar 11</option></select>
+<select id="sortBy"><option value="runs">Sort batting: Runs</option><option value="avg">Sort batting: Average</option><option value="sr">Sort batting: Strike rate</option><option value="wkts">Sort bowling: Wickets</option><option value="econ">Sort bowling: Economy</option><option value="catches">Sort fielding: Catches</option></select>
+<button class="btn active" data-view="all">All</button><button class="btn" data-view="bat">Batting</button><button class="btn" data-view="bowl">Bowling</button><button class="btn" data-view="field">Catches</button>
+</div>
 
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-migrate-1.2.1.js"></script>
-	<script src='js/camera.js'></script>
-	<script src="js/owl.carousel.js"></script>
-	<script src="js/jquery.stellar.js"></script>
-	<script src="js/script.js"></script>
-	<!--[if (gt IE 9)|!(IE)]><!-->
-	<script src="js/jquery.mobile.customized.min.js"></script>
-	<script src="js/wow.js"></script>
-	<script>
-		$(document).ready(function () {
-			if ($('html').hasClass('desktop')) {
-				new WOW().init();
-			}
-		});
-	</script>
-	<!--<![endif]-->
-	<!--[if lt IE 8]>
-	<div style=' clear: both; text-align:center; position: relative;'>
-	 <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
-		 <img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." />
-	 </a>
-	</div>
-	<![endif]-->
-	<!--[if lt IE 9]>
-		<script src="js/html5shiv.js"></script>
-		<link rel="stylesheet" type="text/css" media="screen" href="css/ie.css">
-	<![endif]-->
-	</head>
-<body class="index">
-<!--==============================header=================================-->
-<header id="header">
-	<div id="stuck_container">
-		<div class="container">
-			<div class="row">
-				<div class="grid_12">
-					<h1><a href="index.html">SA Constructions</a><span>your trust our responsibility</span></h1>
-					<nav>
-						<ul class="sf-menu">
-							<li class="current"><a href="index.html">Home</a>
-								<!--<ul>
-									<li><a href="#">Lorem ipsum</a></li>
-									<li><a href="#">Lorem ipsum</a>
-										<ul>
-											<li><a href="#">Lorem ipsum</a></li>
-											<li><a href="#">Lorem ipsum</a></li>
-											<li><a href="#">Lorem ipsum</a></li>
-										</ul>
-									</li>
-									<li><a href="#">Lorem ipsum</a></li>
-								</ul>-->
-							</li>
-							<li><a href="index-1.html">About</a></li>
-							<li><a href="index-2.html">Projects</a></li>
-							<li><a href="index-3.html">Services</a></li>
-							<li><a href="index-4.html">Contacts</a></li>
-						</ul>
-					</nav>
-				</div>
-			</div>
-		</div>
-	</div>
-</header>
-
-<!--=======content================================-->
-
-<section id="content">
-	<div class="full-width-container block-1">
-		<div class="camera_container">
-			<div id="camera_wrap">
-				<div class="item" data-src="images/home-1.jpg">
-					<div class="camera_caption fadeIn">
-						<h3 style="background-color:white;color:black;"><b>We'll Develop Your Imagination</b></h3>
-						<!--<p>Contact Us by</p>
-						<a href="index-4.html" class="btn bd-ra"><span class="fa fa-envelope-o"></span></a>-->
-					</div>
-				</div>
-				<div class="item" data-src="images/taj-hotel.jpg">
-					<div class="camera_caption fadeIn">
-						<h3 style="background-color:white;color:black;">We'll Make You Noticeable</h3>
-						<!--<p>Contact Us by</p>
-						<a href="index-4.html" class="btn bd-ra"><span class="fa fa-envelope-o"></span></a>-->
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="full-width-container block-2">
-		<div class="container">
-			<div class="row">
-				<div class="grid_12">
-					<header>
-						<h3 style="color:black;">Welcome to</h3>
-						<h2 style="color:green;">SA Constructions and Developers</h2>
-					</header>
-					<h4>You imagine and we develop it</h4>
-					<!--<a href="index-1.html" class="btn">more</a>-->
-				</div>
-					<p>SA Constructions is one of the most trusted construction company in the district since decades.
-						We have contributed in the development of public infrastructures including bridges, roads, hospitals, municipal corporation buildings, shopping malls, markets etc.
-						<br><br>We are also experienced in building sacred devotional places like Temples, Mosques etc.</p>
-			</div>
-		</div>
-	</div>
-	<div class="full-width-container block-3 parallax-block" data-stellar-background-ratio="0.5">
-		<div class="container">
-			<div class="row">
-				<div class="grid_12">
-					<header>
-						<h2><span>Services</span></h2>
-					</header>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">Construction</a></h3></div>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">Development</a></h3></div>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">Raw Material Supplier</a></h3></div>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">Engineering</a></h3></div>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">Consultation</a></h3></div>
-				</div>
-				<div class="grid_4">
-					<div class="element"><h3><a href="index-3.html">IT</a></h3></div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="full-width-container block-4">
-		<div class="container">
-			<div class="row">
-				<div class="grid_12">
-					<header>
-						<h2><span>Projects</span></h2>
-					</header>
-				</div>
-			</div>
-			<div class="row">
-				<div id="owl-carousel" class="owl-carousel">
-					<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/hospital.jpg" alt="img"></div>
-							<div class="owl-text">Hospitals</div>
-						</div>
-					</div>
-					<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/road.jpg" alt="img"></div>
-							<div class="owl-text">Roads</div>
-						</div>
-					</div>
-					<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/bridge.jpeg" alt="img"></div>
-							<div class="owl-text">Bridges</div>
-						</div>
-					</div>
-					<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/devotional.jpg" alt=""></div>
-							<div class="owl-text">Devotional</div>
-						</div>
-					</div>
-					<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/mall.jpg" alt=""></div>
-							<div class="owl-text">Shopping malls</div>
-						</div>
-					</div>
-					<!--<div class="grid_4">
-						<div class="">
-							<div class="img_container"><img src="images/index_img-1.jpg" alt=""></div>
-							<div class="owl-text"></div>
-						</div>
-					</div>-->
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="full-width-container block-5">
-		<div class="container">
-			<div class="row">
-				<div class="grid_12">
-					<header>
-						<h2><span>News</span></h2>
-					</header>
-				</div>
-				<div class="grid_4">
-					<article>
-						<h3><a href="#">November 2014</a></h3>
-						<p>Gamus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert commodo re luctus libero. Praesent faucibus malesuada cibuste.</p>
-						<a href="#" class="btn">More</a>
-					</article>
-				</div>
-				<div class="grid_4">
-					<article>
-						<h3><a href="#">March 2015</a></h3>
-						<p>Damus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert commodo re luctus libero. Praesent faucibus malesuada cibust.</p>
-						<a href="#" class="btn">More</a>
-					</article>
-				</div>
-				<div class="grid_4">
-					<article>
-						<h3><a href="#">June 2015</a></h3>
-						<p>Jamus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert commodo re luctus libero. Praesent faucibus malesuadaonec. </p>
-						<a href="#" class="btn">More</a>
-					</article>
-				</div>
-			</div>
-		</div>
-	</div>
+<section class="section" id="matches">
+<div class="section-head"><div><h2>Total matches</h2><div class="section-note">Match results and overall group performance</div></div></div>
+<div class="cards" id="summaryCards"></div>
+<div class="grid2" style="margin-top:16px"><div class="chart-card"><div class="chart-title">Runs scored by match</div><div class="chart-wrap"><canvas id="runsChart"></canvas></div></div><div class="chart-card"><div class="chart-title">Wins by team</div><div class="chart-wrap"><canvas id="winsChart"></canvas></div></div></div>
+<div style="margin-top:16px" class="match-list" id="matchList"></div>
 </section>
 
-<!--=======footer=================================-->
-<footer id="footer">
-	<div class="container">
-		<div class="row">
-			<div class="grid_12 copyright">
-				<h2><span>Follow Us</span></h2>
-				<!--<a href="#" class="btn bd-ra"><span class="fa fa-facebook"></span></a>
-				<a href="#" class="btn bd-ra"><span class="fa fa-tumblr"></span></a>
-				<a href="#" class="btn bd-ra"><span class="fa fa-google-plus"></span></a>-->
-				<pre>© <span id="copyright-year"></span> |  Privacy Policy</pre>
-				Developed by Arshad ali</a>
-			</div>
-		</div>
-	</div>
-	<!--<div class="footer_bottom"><a href="http://www.templatemonster.com/" rel="nofollow"><img src="images/footer-logo.png" alt="logo"></a></div>-->
-</footer>
+<section class="section" id="batting">
+<div class="section-head"><div><h2>Batting stats</h2><div class="section-note">Runs, average, strike rate and boundary hitting</div></div></div>
+<div class="grid2"><div class="chart-card"><div class="chart-title">Runs leaderboard</div><div class="chart-wrap"><canvas id="batChart"></canvas></div></div><div class="chart-card"><div class="chart-title">Strike rate vs average</div><div class="chart-wrap"><canvas id="scatterChart"></canvas></div></div></div>
+<div class="table-card" style="margin-top:16px"><div class="table-scroll"><table><thead><tr><th>Player</th><th>Matches</th><th>Innings</th><th>Runs</th><th>Avg</th><th>SR</th><th>HS</th><th>4s</th><th>6s</th><th>Not outs</th></tr></thead><tbody id="batTable"></tbody></table></div></div>
+</section>
+
+<section class="section" id="bowling">
+<div class="section-head"><div><h2>Bowling stats</h2><div class="section-note">Wickets, economy and best figures</div></div></div>
+<div class="grid2"><div class="chart-card"><div class="chart-title">Wickets leaderboard</div><div class="chart-wrap"><canvas id="bowlChart"></canvas></div></div><div class="chart-card"><div class="chart-title">Economy rate</div><div class="chart-wrap"><canvas id="econChart"></canvas></div></div></div>
+<div class="table-card" style="margin-top:16px"><div class="table-scroll"><table><thead><tr><th>Player</th><th>Overs</th><th>Runs conceded</th><th>Wickets</th><th>Economy</th><th>Best</th><th>3W</th><th>5W</th></tr></thead><tbody id="bowlTable"></tbody></table></div></div>
+</section>
+
+<section class="section" id="fielding">
+<div class="section-head"><div><h2>Catches & fielding</h2><div class="section-note">Catches, run outs and stumpings</div></div></div>
+<div class="grid2"><div class="chart-card"><div class="chart-title">Catches leaderboard</div><div class="chart-wrap"><canvas id="catchChart"></canvas></div></div><div class="chart-card"><div class="chart-title">Fielding contributions</div><div class="chart-wrap"><canvas id="fieldChart"></canvas></div></div></div>
+<div class="table-card" style="margin-top:16px"><div class="table-scroll"><table><thead><tr><th>Player</th><th>Catches</th><th>Run outs</th><th>Stumpings</th><th>Total dismissals</th></tr></thead><tbody id="fieldTable"></tbody></table></div></div>
+</section>
+</main>
+
 <script>
-	jQuery(function(){
-		jQuery('#camera_wrap').camera({
-			height: '34.58333333333333%',
-			thumbnails: false,
-			pagination: true,
-			fx: 'simpleFade',
-			loader: 'none',
-			hover: false,
-			navigation: false,
-			playPause: false,
-			minHeight: "139px",
-		});
-	});
-</script>
-<script>
-	$(document).ready(function() {
-		$(".owl-carousel").owlCarousel({
-			navigation: true,
-			pagination: false,
-			items : 3,
-			itemsDesktop : [1199,3],
-			itemsDesktopSmall : [979,3],
-			itemsTablet: [750,1],
-			itemsMobile : [479,1],
-			navigationText: false
-		});
-	});
-</script>
-<script>
-	$(document).ready(function() { 
-			if ($('html').hasClass('desktop')) {
-				$.stellar({
-					horizontalScrolling: false,
-					verticalOffset: 20,
-					resposive: true,
-					hideDistantElements: true,
-				});
-			}
-		});
+const DATA = {"formatVersion":1,"groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","groupName":"SkyOne","exportTimestamp":1789837134700,"appVersionName":"1.0","appVersionCode":1,"players":[{"id":"96427ca7-d70e-490e-9aef-bb22f2ea1ba1","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Arshad","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813504402},{"id":"48c6f800-85bc-4377-9029-24457bb923f1","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Abrar","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813511613},{"id":"71ec6e37-113a-4d67-8c23-18239975531d","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Faraz","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"LEFT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813524142},{"id":"97e9e741-4350-405d-baa6-fc1093f97119","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Kayum M","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813537068},{"id":"f7223728-d0ef-46bf-8a44-716337994f1f","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Imran","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813544582},{"id":"55cd005f-3a5f-4435-b642-b34dc50f7084","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Quisar","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813550939},{"id":"a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Arbaz","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813648848},{"id":"60b10647-5f35-4195-987e-5d5b279b6880","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Farooq","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813661886},{"id":"3eba395a-5103-4797-9cd7-fbbf48d2ed2b","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Nasir","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813675489},{"id":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Nasru","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813689261},{"id":"23d36db0-9f58-4e88-a066-9243d90b15ed","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Danish","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813700796},{"id":"7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Ahmed","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813714319},{"id":"53af98b1-7f06-47be-b6aa-c5644793365c","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Makhdoom","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813721902},{"id":"7334c2a5-daa6-43cc-add3-2d1904603e2d","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Navid","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789813735903},{"id":"da396028-794c-45e3-ae50-38188cc026d7","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Mosin","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789815905942},{"id":"e263e1f7-2a1d-435f-805d-e4ab8dde68ca","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Zahid","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789815917553},{"id":"44820b8b-85d8-4767-8e7d-abff86b0af41","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Aahad","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789816935180},{"id":"258f0216-f437-4246-bc1d-ea8f4111cd04","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","name":"Kayum S","nickname":null,"photoUri":null,"role":"BATSMAN","battingHand":"RIGHT_HAND","bowlingStyle":null,"isActive":true,"skillRating":null,"updatedAt":1789818736134}],"matches":[{"id":"9937ae73-f71d-4378-9435-a5472334ee64","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","date":1789817092329,"teamAName":"Arshad 11","teamBName":"Quisar 11","teamAPlayerIds":["7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","96427ca7-d70e-490e-9aef-bb22f2ea1ba1","53af98b1-7f06-47be-b6aa-c5644793365c","7334c2a5-daa6-43cc-add3-2d1904603e2d","0ccb20fa-00a3-4dee-b009-dd53673f8e06","e263e1f7-2a1d-435f-805d-e4ab8dde68ca","23d36db0-9f58-4e88-a066-9243d90b15ed","48c6f800-85bc-4377-9029-24457bb923f1"],"teamBPlayerIds":["97e9e741-4350-405d-baa6-fc1093f97119","da396028-794c-45e3-ae50-38188cc026d7","55cd005f-3a5f-4435-b642-b34dc50f7084","a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","f7223728-d0ef-46bf-8a44-716337994f1f","44820b8b-85d8-4767-8e7d-abff86b0af41","71ec6e37-113a-4d67-8c23-18239975531d"],"oversLimit":6,"tossWinnerTeam":"Arshad 11","tossDecision":"BAT","status":"COMPLETED","resultSummary":"Quisar 11 won by 5 wickets","winningTeam":"Quisar 11","oddPlayerHandling":"SITS_OUT","createdAt":1789817092329,"updatedAt":1789818672607,"allowLastMan":false,"excludedFromMatchCountPlayerIds":[]},{"id":"4011531e-df4e-42ad-afe6-f6e38ddf58b0","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","date":1789818678577,"teamAName":"Arshad 11","teamBName":"Quisar 11","teamAPlayerIds":["7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","96427ca7-d70e-490e-9aef-bb22f2ea1ba1","53af98b1-7f06-47be-b6aa-c5644793365c","7334c2a5-daa6-43cc-add3-2d1904603e2d","0ccb20fa-00a3-4dee-b009-dd53673f8e06","e263e1f7-2a1d-435f-805d-e4ab8dde68ca","48c6f800-85bc-4377-9029-24457bb923f1","258f0216-f437-4246-bc1d-ea8f4111cd04"],"teamBPlayerIds":["97e9e741-4350-405d-baa6-fc1093f97119","da396028-794c-45e3-ae50-38188cc026d7","55cd005f-3a5f-4435-b642-b34dc50f7084","a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","f7223728-d0ef-46bf-8a44-716337994f1f","44820b8b-85d8-4767-8e7d-abff86b0af41","71ec6e37-113a-4d67-8c23-18239975531d","60b10647-5f35-4195-987e-5d5b279b6880","23d36db0-9f58-4e88-a066-9243d90b15ed"],"oversLimit":6,"tossWinnerTeam":"Quisar 11","tossDecision":"BAT","status":"COMPLETED","resultSummary":"Quisar 11 won by 1 run","winningTeam":"Quisar 11","oddPlayerHandling":"SITS_OUT","createdAt":1789818678577,"updatedAt":1789820323260,"allowLastMan":false,"excludedFromMatchCountPlayerIds":[]},{"id":"2dafd26b-6fb7-4a2d-9c3f-8811503d4714","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","date":1789820332212,"teamAName":"Arshad 11","teamBName":"Quisar 11","teamAPlayerIds":["7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","96427ca7-d70e-490e-9aef-bb22f2ea1ba1","53af98b1-7f06-47be-b6aa-c5644793365c","0ccb20fa-00a3-4dee-b009-dd53673f8e06","e263e1f7-2a1d-435f-805d-e4ab8dde68ca","48c6f800-85bc-4377-9029-24457bb923f1","258f0216-f437-4246-bc1d-ea8f4111cd04","3eba395a-5103-4797-9cd7-fbbf48d2ed2b"],"teamBPlayerIds":["97e9e741-4350-405d-baa6-fc1093f97119","da396028-794c-45e3-ae50-38188cc026d7","55cd005f-3a5f-4435-b642-b34dc50f7084","a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","f7223728-d0ef-46bf-8a44-716337994f1f","44820b8b-85d8-4767-8e7d-abff86b0af41","71ec6e37-113a-4d67-8c23-18239975531d","60b10647-5f35-4195-987e-5d5b279b6880","23d36db0-9f58-4e88-a066-9243d90b15ed"],"oversLimit":6,"tossWinnerTeam":"Quisar 11","tossDecision":"BAT","status":"COMPLETED","resultSummary":"Quisar 11 won by 22 runs","winningTeam":"Quisar 11","oddPlayerHandling":"SITS_OUT","createdAt":1789820332212,"updatedAt":1789821988588,"allowLastMan":false,"excludedFromMatchCountPlayerIds":[]},{"id":"5970efb8-1719-43cd-b3a2-e90f7ad5dc73","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","date":1789822013951,"teamAName":"Arshad 11","teamBName":"Quisar 11","teamAPlayerIds":["7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","96427ca7-d70e-490e-9aef-bb22f2ea1ba1","53af98b1-7f06-47be-b6aa-c5644793365c","0ccb20fa-00a3-4dee-b009-dd53673f8e06","e263e1f7-2a1d-435f-805d-e4ab8dde68ca","48c6f800-85bc-4377-9029-24457bb923f1","258f0216-f437-4246-bc1d-ea8f4111cd04","3eba395a-5103-4797-9cd7-fbbf48d2ed2b"],"teamBPlayerIds":["97e9e741-4350-405d-baa6-fc1093f97119","da396028-794c-45e3-ae50-38188cc026d7","55cd005f-3a5f-4435-b642-b34dc50f7084","a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","f7223728-d0ef-46bf-8a44-716337994f1f","44820b8b-85d8-4767-8e7d-abff86b0af41","71ec6e37-113a-4d67-8c23-18239975531d","60b10647-5f35-4195-987e-5d5b279b6880","23d36db0-9f58-4e88-a066-9243d90b15ed"],"oversLimit":6,"tossWinnerTeam":"Quisar 11","tossDecision":"BAT","status":"COMPLETED","resultSummary":"Arshad 11 won by 4 wickets","winningTeam":"Arshad 11","oddPlayerHandling":"SITS_OUT","createdAt":1789822013951,"updatedAt":1789823646344,"allowLastMan":true,"excludedFromMatchCountPlayerIds":[]},{"id":"11c6f4de-3fc7-4206-947d-74f2c5c67e18","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","date":1789823672117,"teamAName":"Arshad 11","teamBName":"Quisar 11","teamAPlayerIds":["7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","96427ca7-d70e-490e-9aef-bb22f2ea1ba1","0ccb20fa-00a3-4dee-b009-dd53673f8e06","e263e1f7-2a1d-435f-805d-e4ab8dde68ca","48c6f800-85bc-4377-9029-24457bb923f1","258f0216-f437-4246-bc1d-ea8f4111cd04","3eba395a-5103-4797-9cd7-fbbf48d2ed2b","a6dfd2fe-862b-4887-8705-2f8a2bd2c77b"],"teamBPlayerIds":["97e9e741-4350-405d-baa6-fc1093f97119","da396028-794c-45e3-ae50-38188cc026d7","55cd005f-3a5f-4435-b642-b34dc50f7084","f7223728-d0ef-46bf-8a44-716337994f1f","44820b8b-85d8-4767-8e7d-abff86b0af41","71ec6e37-113a-4d67-8c23-18239975531d","60b10647-5f35-4195-987e-5d5b279b6880","23d36db0-9f58-4e88-a066-9243d90b15ed"],"oversLimit":6,"tossWinnerTeam":"Arshad 11","tossDecision":"BAT","status":"COMPLETED","resultSummary":"Arshad 11 won by 19 runs (match ended early)","winningTeam":"Arshad 11","oddPlayerHandling":"SITS_OUT","createdAt":1789823672117,"updatedAt":1789825427674,"allowLastMan":true,"excludedFromMatchCountPlayerIds":[]}],"innings":[{"id":"7f95393e-dc21-41bd-b388-9cc98136c34e","matchId":"9937ae73-f71d-4378-9435-a5472334ee64","inningsNumber":1,"battingTeam":"Arshad 11","bowlingTeam":"Quisar 11","totalRuns":63,"wickets":1,"legalBallsBowled":36,"isCompleted":true,"strikerId":"48c6f800-85bc-4377-9029-24457bb923f1","nonStrikerId":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","currentBowlerId":"71ec6e37-113a-4d67-8c23-18239975531d","previousOverBowlerId":"71ec6e37-113a-4d67-8c23-18239975531d"},{"id":"afcf64aa-8ae8-4f45-a4d9-e3c339d027bf","matchId":"9937ae73-f71d-4378-9435-a5472334ee64","inningsNumber":2,"battingTeam":"Quisar 11","bowlingTeam":"Arshad 11","totalRuns":65,"wickets":1,"legalBallsBowled":33,"isCompleted":true,"strikerId":"71ec6e37-113a-4d67-8c23-18239975531d","nonStrikerId":"55cd005f-3a5f-4435-b642-b34dc50f7084","currentBowlerId":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","previousOverBowlerId":"7334c2a5-daa6-43cc-add3-2d1904603e2d"},{"id":"959967db-dc95-4024-9c7e-3f717d987b3a","matchId":"4011531e-df4e-42ad-afe6-f6e38ddf58b0","inningsNumber":1,"battingTeam":"Quisar 11","bowlingTeam":"Arshad 11","totalRuns":58,"wickets":5,"legalBallsBowled":36,"isCompleted":true,"strikerId":"55cd005f-3a5f-4435-b642-b34dc50f7084","nonStrikerId":"71ec6e37-113a-4d67-8c23-18239975531d","currentBowlerId":"258f0216-f437-4246-bc1d-ea8f4111cd04","previousOverBowlerId":"258f0216-f437-4246-bc1d-ea8f4111cd04"},{"id":"4914c6e4-92bb-4ae2-b8db-093735e6b663","matchId":"4011531e-df4e-42ad-afe6-f6e38ddf58b0","inningsNumber":2,"battingTeam":"Arshad 11","bowlingTeam":"Quisar 11","totalRuns":57,"wickets":5,"legalBallsBowled":36,"isCompleted":true,"strikerId":"e263e1f7-2a1d-435f-805d-e4ab8dde68ca","nonStrikerId":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","currentBowlerId":"f7223728-d0ef-46bf-8a44-716337994f1f","previousOverBowlerId":"f7223728-d0ef-46bf-8a44-716337994f1f"},{"id":"410a2942-7816-416b-a038-a54826ddb75e","matchId":"2dafd26b-6fb7-4a2d-9c3f-8811503d4714","inningsNumber":1,"battingTeam":"Quisar 11","bowlingTeam":"Arshad 11","totalRuns":69,"wickets":5,"legalBallsBowled":36,"isCompleted":true,"strikerId":"23d36db0-9f58-4e88-a066-9243d90b15ed","nonStrikerId":"71ec6e37-113a-4d67-8c23-18239975531d","currentBowlerId":"258f0216-f437-4246-bc1d-ea8f4111cd04","previousOverBowlerId":"258f0216-f437-4246-bc1d-ea8f4111cd04"},{"id":"5e594146-8341-4c27-9d43-579b7c3d1a97","matchId":"2dafd26b-6fb7-4a2d-9c3f-8811503d4714","inningsNumber":2,"battingTeam":"Arshad 11","bowlingTeam":"Quisar 11","totalRuns":47,"wickets":7,"legalBallsBowled":33,"isCompleted":true,"strikerId":"96427ca7-d70e-490e-9aef-bb22f2ea1ba1","nonStrikerId":"53af98b1-7f06-47be-b6aa-c5644793365c","currentBowlerId":"71ec6e37-113a-4d67-8c23-18239975531d","previousOverBowlerId":"f7223728-d0ef-46bf-8a44-716337994f1f"},{"id":"44b2c6c8-e500-4779-9136-6ce4168a19fc","matchId":"5970efb8-1719-43cd-b3a2-e90f7ad5dc73","inningsNumber":1,"battingTeam":"Quisar 11","bowlingTeam":"Arshad 11","totalRuns":59,"wickets":4,"legalBallsBowled":36,"isCompleted":true,"strikerId":"f7223728-d0ef-46bf-8a44-716337994f1f","nonStrikerId":"a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","currentBowlerId":"48c6f800-85bc-4377-9029-24457bb923f1","previousOverBowlerId":"48c6f800-85bc-4377-9029-24457bb923f1"},{"id":"c38df1af-11cf-4221-8107-7550044a98a1","matchId":"5970efb8-1719-43cd-b3a2-e90f7ad5dc73","inningsNumber":2,"battingTeam":"Arshad 11","bowlingTeam":"Quisar 11","totalRuns":64,"wickets":4,"legalBallsBowled":35,"isCompleted":true,"strikerId":"3eba395a-5103-4797-9cd7-fbbf48d2ed2b","nonStrikerId":"96427ca7-d70e-490e-9aef-bb22f2ea1ba1","currentBowlerId":"f7223728-d0ef-46bf-8a44-716337994f1f","previousOverBowlerId":"71ec6e37-113a-4d67-8c23-18239975531d"},{"id":"dbd636c7-3a0a-4c65-a156-254c49582184","matchId":"11c6f4de-3fc7-4206-947d-74f2c5c67e18","inningsNumber":1,"battingTeam":"Arshad 11","bowlingTeam":"Quisar 11","totalRuns":65,"wickets":2,"legalBallsBowled":36,"isCompleted":true,"strikerId":"3eba395a-5103-4797-9cd7-fbbf48d2ed2b","nonStrikerId":"96427ca7-d70e-490e-9aef-bb22f2ea1ba1","currentBowlerId":"97e9e741-4350-405d-baa6-fc1093f97119","previousOverBowlerId":"97e9e741-4350-405d-baa6-fc1093f97119"},{"id":"0e31b894-3060-4339-aa7e-7caefc9df687","matchId":"11c6f4de-3fc7-4206-947d-74f2c5c67e18","inningsNumber":2,"battingTeam":"Quisar 11","bowlingTeam":"Arshad 11","totalRuns":46,"wickets":5,"legalBallsBowled":34,"isCompleted":true,"strikerId":"da396028-794c-45e3-ae50-38188cc026d7","nonStrikerId":"23d36db0-9f58-4e88-a066-9243d90b15ed","currentBowlerId":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","previousOverBowlerId":"48c6f800-85bc-4377-9029-24457bb923f1"}],"careerStats":[{"playerId":"7334c2a5-daa6-43cc-add3-2d1904603e2d","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":2,"battingInnings":2,"runsScored":39,"ballsFaced":26,"highestScore":30,"notOuts":0,"fifties":0,"hundreds":0,"fours":1,"sixes":4,"bowlingInnings":2,"legalBallsBowled":12,"runsConceded":21,"wicketsTaken":1,"bestBowlingWickets":1,"bestBowlingRuns":8,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":0,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"0ccb20fa-00a3-4dee-b009-dd53673f8e06","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":4,"runsScored":38,"ballsFaced":25,"highestScore":27,"notOuts":2,"fifties":0,"hundreds":0,"fours":1,"sixes":4,"bowlingInnings":4,"legalBallsBowled":19,"runsConceded":38,"wicketsTaken":3,"bestBowlingWickets":1,"bestBowlingRuns":2,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":1,"stumpings":0,"updatedAt":1789825427711},{"playerId":"48c6f800-85bc-4377-9029-24457bb923f1","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":5,"runsScored":24,"ballsFaced":27,"highestScore":11,"notOuts":1,"fifties":0,"hundreds":0,"fours":1,"sixes":1,"bowlingInnings":5,"legalBallsBowled":30,"runsConceded":39,"wicketsTaken":4,"bestBowlingWickets":2,"bestBowlingRuns":6,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"71ec6e37-113a-4d67-8c23-18239975531d","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":5,"runsScored":96,"ballsFaced":45,"highestScore":44,"notOuts":3,"fifties":0,"hundreds":0,"fours":0,"sixes":13,"bowlingInnings":3,"legalBallsBowled":15,"runsConceded":17,"wicketsTaken":2,"bestBowlingWickets":1,"bestBowlingRuns":1,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"a6dfd2fe-862b-4887-8705-2f8a2bd2c77b","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":3,"runsScored":3,"ballsFaced":7,"highestScore":3,"notOuts":1,"fifties":0,"hundreds":0,"fours":0,"sixes":0,"bowlingInnings":3,"legalBallsBowled":14,"runsConceded":38,"wicketsTaken":3,"bestBowlingWickets":2,"bestBowlingRuns":20,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":5,"runOuts":1,"stumpings":0,"updatedAt":1789825427711},{"playerId":"55cd005f-3a5f-4435-b642-b34dc50f7084","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":4,"runsScored":29,"ballsFaced":30,"highestScore":15,"notOuts":2,"fifties":0,"hundreds":0,"fours":1,"sixes":1,"bowlingInnings":5,"legalBallsBowled":31,"runsConceded":26,"wicketsTaken":3,"bestBowlingWickets":1,"bestBowlingRuns":3,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"f7223728-d0ef-46bf-8a44-716337994f1f","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":3,"runsScored":46,"ballsFaced":27,"highestScore":31,"notOuts":1,"fifties":0,"hundreds":0,"fours":1,"sixes":5,"bowlingInnings":4,"legalBallsBowled":23,"runsConceded":48,"wicketsTaken":1,"bestBowlingWickets":1,"bestBowlingRuns":11,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":3,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"60b10647-5f35-4195-987e-5d5b279b6880","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":4,"battingInnings":4,"runsScored":53,"ballsFaced":29,"highestScore":26,"notOuts":0,"fifties":0,"hundreds":0,"fours":1,"sixes":7,"bowlingInnings":3,"legalBallsBowled":18,"runsConceded":28,"wicketsTaken":2,"bestBowlingWickets":1,"bestBowlingRuns":4,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":3,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"23d36db0-9f58-4e88-a066-9243d90b15ed","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":4,"runsScored":17,"ballsFaced":17,"highestScore":13,"notOuts":2,"fifties":0,"hundreds":0,"fours":0,"sixes":2,"bowlingInnings":3,"legalBallsBowled":18,"runsConceded":23,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":5,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"97e9e741-4350-405d-baa6-fc1093f97119","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":3,"runsScored":12,"ballsFaced":14,"highestScore":10,"notOuts":0,"fifties":0,"hundreds":0,"fours":0,"sixes":1,"bowlingInnings":4,"legalBallsBowled":25,"runsConceded":38,"wicketsTaken":6,"bestBowlingWickets":4,"bestBowlingRuns":7,"threeWicketHauls":1,"fiveWicketHauls":0,"catches":2,"runOuts":2,"stumpings":0,"updatedAt":1789825427711},{"playerId":"da396028-794c-45e3-ae50-38188cc026d7","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":2,"runsScored":1,"ballsFaced":4,"highestScore":1,"notOuts":0,"fifties":0,"hundreds":0,"fours":0,"sixes":0,"bowlingInnings":3,"legalBallsBowled":18,"runsConceded":49,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":7,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":0,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"96427ca7-d70e-490e-9aef-bb22f2ea1ba1","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":4,"runsScored":72,"ballsFaced":37,"highestScore":28,"notOuts":2,"fifties":0,"hundreds":0,"fours":0,"sixes":9,"bowlingInnings":5,"legalBallsBowled":30,"runsConceded":28,"wicketsTaken":5,"bestBowlingWickets":2,"bestBowlingRuns":1,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":3,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"53af98b1-7f06-47be-b6aa-c5644793365c","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":4,"battingInnings":2,"runsScored":7,"ballsFaced":14,"highestScore":4,"notOuts":1,"fifties":0,"hundreds":0,"fours":0,"sixes":0,"bowlingInnings":2,"legalBallsBowled":12,"runsConceded":20,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":6,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":2,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"258f0216-f437-4246-bc1d-ea8f4111cd04","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":4,"battingInnings":3,"runsScored":26,"ballsFaced":9,"highestScore":20,"notOuts":0,"fifties":0,"hundreds":0,"fours":2,"sixes":3,"bowlingInnings":4,"legalBallsBowled":24,"runsConceded":56,"wicketsTaken":3,"bestBowlingWickets":1,"bestBowlingRuns":13,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":3,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"e263e1f7-2a1d-435f-805d-e4ab8dde68ca","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":3,"runsScored":8,"ballsFaced":17,"highestScore":6,"notOuts":1,"fifties":0,"hundreds":0,"fours":0,"sixes":1,"bowlingInnings":2,"legalBallsBowled":12,"runsConceded":32,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":15,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":2,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"44820b8b-85d8-4767-8e7d-abff86b0af41","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":1,"runsScored":1,"ballsFaced":2,"highestScore":1,"notOuts":0,"fifties":0,"hundreds":0,"fours":0,"sixes":0,"bowlingInnings":4,"legalBallsBowled":20,"runsConceded":40,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":2,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711},{"playerId":"3eba395a-5103-4797-9cd7-fbbf48d2ed2b","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":3,"battingInnings":3,"runsScored":51,"ballsFaced":20,"highestScore":30,"notOuts":2,"fifties":0,"hundreds":0,"fours":0,"sixes":7,"bowlingInnings":3,"legalBallsBowled":18,"runsConceded":38,"wicketsTaken":0,"bestBowlingWickets":0,"bestBowlingRuns":10,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":3,"runOuts":1,"stumpings":0,"updatedAt":1789825427711},{"playerId":"7a0057d3-17da-43b2-bfc0-a21e4b4fbb48","groupId":"e358fbe1-bca6-4bc8-bdca-0cf8a118b27c","matchesPlayed":5,"battingInnings":2,"runsScored":6,"ballsFaced":2,"highestScore":6,"notOuts":0,"fifties":0,"hundreds":0,"fours":0,"sixes":1,"bowlingInnings":2,"legalBallsBowled":12,"runsConceded":13,"wicketsTaken":1,"bestBowlingWickets":1,"bestBowlingRuns":9,"threeWicketHauls":0,"fiveWicketHauls":0,"catches":1,"runOuts":0,"stumpings":0,"updatedAt":1789825427711}]};
+const players = Object.fromEntries(DATA.players.map(p=>[p.id,p]));
+const stats = DATA.careerStats.map(s=>({...s,name:players[s.playerId]?.name||"Unknown"}));
+const matches = DATA.matches;
+document.getElementById("groupName").textContent=DATA.groupName||"Cricket Stats";
+const fmt=n=>new Intl.NumberFormat("en-IN").format(n||0);
+const overs=s=>`${Math.floor((s||0)/6)}.${(s||0)%6}`;
+const avg=s=>s.battingInnings-s.notOuts>0?s.runsScored/(s.battingInnings-s.notOuts):0;
+const sr=s=>s.ballsFaced?s.runsScored/s.ballsFaced*100:0;
+const econ=s=>s.legalBallsBowled?s.runsConceded/(s.legalBallsBowled/6):0;
+let charts={};
+
+function makeChart(id,type,labels,datasets,opts={}){
+ if(charts[id]) charts[id].destroy();
+ charts[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:opts.legend??false}},scales:type==="doughnut"?{}:{y:{beginAtZero:true}},...opts.options}});
+}
+function filteredStats(){
+ const q=document.getElementById("search").value.toLowerCase().trim();
+ return stats.filter(s=>!q||s.name.toLowerCase().includes(q));
+}
+function render(){
+ const ss=filteredStats();
+ const wins={ "Arshad 11":0,"Quisar 11":0}; matches.forEach(m=>wins[m.winningTeam]=(wins[m.winningTeam]||0)+1);
+ const totalRuns=DATA.innings.reduce((a,i)=>a+i.totalRuns,0), totalW=DATA.innings.reduce((a,i)=>a+i.wickets,0);
+ document.getElementById("summaryCards").innerHTML=[
+  ["Matches",matches.length,"completed matches"],
+  ["Total runs",totalRuns,"across all innings"],
+  ["Total wickets",totalW,"across all innings"],
+  ["Highest score",Math.max(...DATA.innings.map(i=>i.totalRuns)), "team innings"]
+ ].map(x=>`<div class="card"><div class="label">${x[0]}</div><div class="value">${fmt(x[1])}</div><div class="sub">${x[2]}</div></div>`).join("");
+ const labels=matches.map((m,i)=>`M${i+1}`);
+ makeChart("runsChart","bar",labels,[{label:"Runs",data:matches.map(m=>DATA.innings.filter(i=>i.matchId===m.id).reduce((a,i)=>a+i.totalRuns,0)),borderRadius:7}]);
+ makeChart("winsChart","doughnut",Object.keys(wins),[{data:Object.values(wins)}],{legend:true});
+ document.getElementById("matchList").innerHTML=matches.map((m,i)=>{
+   const cls=m.winningTeam==="Arshad 11"?"win":"loss";
+   return `<div class="match"><div class="date">Match ${i+1}<br>${new Date(m.date).toLocaleDateString("en-IN")}</div><div class="teams">${m.teamAName} <span style="color:#98a2b3">vs</span> ${m.teamBName}<br><span class="pill">${m.oversLimit} overs</span></div><div class="result ${cls}">${m.resultSummary}</div></div>`;
+ }).join("");
+
+ const sorted=[...ss].sort((a,b)=>{
+   const k=document.getElementById("sortBy").value;
+   return k==="runs"?b.runsScored-a.runsScored:k==="avg"?avg(b)-avg(a):k==="sr"?sr(b)-sr(a):k==="wkts"?b.wicketsTaken-a.wicketsTaken:k==="econ"?econ(a)-econ(b):b.catches-a.catches;
+ });
+ const top=sorted.slice(0,10);
+ makeChart("batChart","bar",top.map(s=>s.name),[{label:"Runs",data:top.map(s=>s.runsScored),borderRadius:7}]);
+ makeChart("scatterChart","scatter",[],[{label:"Players",data:ss.map(s=>({x:avg(s),y:sr(s),label:s.name}))}],{options:{scales:{x:{title:{display:true,text:"Batting average"}},y:{title:{display:true,text:"Strike rate"},beginAtZero:true}}},legend:false});
+ document.getElementById("batTable").innerHTML=sorted.map(s=>`<tr><td class="player">${s.name}</td><td class="num">${s.matchesPlayed}</td><td class="num">${s.battingInnings}</td><td class="num"><b>${s.runsScored}</b></td><td class="num">${avg(s).toFixed(2)}</td><td class="num">${sr(s).toFixed(1)}</td><td class="num">${s.highestScore}</td><td class="num">${s.fours}</td><td class="num">${s.sixes}</td><td class="num">${s.notOuts}</td></tr>`).join("");
+
+ const bowl=[...ss].sort((a,b)=>b.wicketsTaken-a.wicketsTaken);
+ makeChart("bowlChart","bar",bowl.slice(0,10).map(s=>s.name),[{label:"Wickets",data:bowl.slice(0,10).map(s=>s.wicketsTaken),borderRadius:7}]);
+ const econSorted=[...ss].filter(s=>s.bowlingInnings).sort((a,b)=>econ(a)-econ(b));
+ makeChart("econChart","bar",econSorted.map(s=>s.name),[{label:"Economy",data:econSorted.map(s=>+econ(s).toFixed(2)),borderRadius:7}]);
+ document.getElementById("bowlTable").innerHTML=bowl.map(s=>`<tr><td class="player">${s.name}</td><td class="num">${overs(s.legalBallsBowled)}</td><td class="num">${s.runsConceded}</td><td class="num"><b>${s.wicketsTaken}</b></td><td class="num">${econ(s).toFixed(2)}</td><td class="num">${s.bestBowlingWickets}/${s.bestBowlingRuns}</td><td class="num">${s.threeWicketHauls}</td><td class="num">${s.fiveWicketHauls}</td></tr>`).join("");
+
+ const field=[...ss].sort((a,b)=>b.catches-a.catches);
+ makeChart("catchChart","bar",field.map(s=>s.name),[{label:"Catches",data:field.map(s=>s.catches),borderRadius:7}]);
+ makeChart("fieldChart","bar",field.map(s=>s.name),[
+  {label:"Catches",data:field.map(s=>s.catches),stack:"f"},
+  {label:"Run outs",data:field.map(s=>s.runOuts),stack:"f"},
+  {label:"Stumpings",data:field.map(s=>s.stumpings),stack:"f"}]);
+ document.getElementById("fieldTable").innerHTML=field.map(s=>`<tr><td class="player">${s.name}</td><td class="num">${s.catches}</td><td class="num">${s.runOuts}</td><td class="num">${s.stumpings}</td><td class="num"><b>${s.catches+s.runOuts+s.stumpings}</b></td></tr>`).join("");
+}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("sortBy").addEventListener("change",render);
+document.querySelectorAll(".btn").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");const v=b.dataset.view;document.getElementById(v==="all"?"matches":v==="bat"?"batting":v==="bowl"?"bowling":"fielding").scrollIntoView({behavior:"smooth"});}));
+render();
 </script>
 </body>
 </html>
